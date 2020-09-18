@@ -102,9 +102,16 @@ class _HomePageState extends State<HomePage> {
           )),
       child: Row(
         children: [
-          Icon(
-            Icons.search,
-            color: Colors.grey,
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                changeSearch = true;
+              });
+            },
+            child: Icon(
+                Icons.search,
+                color: Colors.grey,
+              ),
           ),
           SizedBox(
             width: 8.0,
@@ -196,16 +203,16 @@ class _HomePageState extends State<HomePage> {
               child: changeListView ? Text('List view') : Text('Grid view'),
             ),
             PopupMenuItem(
-              value: changeBySort ? 1 : 2,
-              child: changeBySort ? Text('Date by asc') : Text('Date by desc'),
+              value: changeBySort ? 2 : 1,
+              child: changeBySort ? Text('Date by desc') : Text('Date by asc'),
             )
           ],
           onSelected: (value) {
             setState(() {
               if (value == 1) {
-                changeBySort = false;
-              } else if (value == 2) {
                 changeBySort = true;
+              } else if (value == 2) {
+                changeBySort = false;
               } else if (value == 3) {
                 Navigator.push(context,
                     CupertinoPageRoute(builder: (context) => SettingPage()));
@@ -269,7 +276,10 @@ class _HomePageState extends State<HomePage> {
         child: ListTile(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-          title: Text(note.body),
+          title: Text(
+            note.body,
+            overflow: TextOverflow.ellipsis,
+          ),
           subtitle: Text(getDateTimeRepresentation(note, notesDao)),
           trailing: GestureDetector(
             onTap: () {

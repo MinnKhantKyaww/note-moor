@@ -31,10 +31,15 @@ class NotesDao extends DatabaseAccessor<AppDatabase> with _$NotesDaoMixin {
 
   Future<List<Note>> getAllNotes() => select(notes).get();
 
-  Stream<List<Note>> watchAllNotes() => select(notes).watch();
+  Stream<List<Note>> watchAllNotes() => (select(notes)
+        ..orderBy(([
+          (note) =>
+              OrderingTerm(expression: note.datetime, mode: OrderingMode.desc)
+        ])))
+      .watch();
 
   Stream<List<Note>> watchAllNotesDateTime(
-      {bool sort = false, bool favorite = false}) {
+      {bool sort = true, bool favorite = false}) {
     var selectQuery = select(notes);
     /*if(favorite && sort == true) {
       return (selectQuery
@@ -49,28 +54,30 @@ class NotesDao extends DatabaseAccessor<AppDatabase> with _$NotesDaoMixin {
       selectQuery
         ..orderBy(([
           (note) =>
-              OrderingTerm(expression: note.datetime, mode: OrderingMode.desc)
+              OrderingTerm(expression: note.datetime, mode: OrderingMode.asc)
         ]));
     } else {
       selectQuery
         ..orderBy(([
           (note) =>
-              OrderingTerm(expression: note.datetime, mode: OrderingMode.asc)
+              OrderingTerm(expression: note.datetime, mode: OrderingMode.desc)
         ]));
     }
 
     return selectQuery.watch();
   }
 
-  Stream<List<Note>> watchAllNotesByWord({String word, DateTime dateTime, bool selected}) {
+  Stream<List<Note>> watchAllNotesByWord(
+      {String word, DateTime dateTime, bool selected}) {
     var selectQuery = select(notes);
 
     if (selected) {
       selectQuery.where((tbl) => tbl.body.like("$word%"));
     } else {
       selectQuery.where((tbl) {
-        print(tbl.datetime.day);
-        return tbl.datetime.day.equals(dateTime.day) & tbl.datetime.month.equals(dateTime.month) & tbl.datetime.year.equals(dateTime.year);
+        return tbl.datetime.day.equals(dateTime.day) &
+            tbl.datetime.month.equals(dateTime.month) &
+            tbl.datetime.year.equals(dateTime.year);
       });
     }
 
