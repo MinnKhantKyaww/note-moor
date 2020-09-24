@@ -4,6 +4,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:todos_moor/database/todos_database.dart';
+import 'package:todos_moor/model/DarkTheme.dart';
 import 'package:todos_moor/screen/edit_page.dart';
 import 'package:todos_moor/screen/setting_page.dart';
 
@@ -54,6 +55,11 @@ class _HomePageState extends State<HomePage> {
         ? notesDao.watchAllNotesDateTime(sort: true, favorite: changeFavorite)
         : notesDao.watchAllNotesDateTime(sort: false);
 
+    if (changeDateSearch) {
+      streamNotes = notesDao.watchAllNotesByWord(
+          dateTime: searchDateTime, selected: false);
+    }
+
     if (changeFavorite) {
       streamNotes = notesDao.watchAllNotesByFavorite(sort: false);
     }
@@ -63,22 +69,17 @@ class _HomePageState extends State<HomePage> {
           word: _searchController.text, selected: true);
     }
 
-    if (changeDateSearch) {
-      streamNotes = notesDao.watchAllNotesByWord(
-          dateTime: searchDateTime, selected: false);
-    }
-
     return streamNotes;
   }
 
-  String getDateTimeRepresentation(Note note, NotesDao notesDao) {
+  String getDateTimeRepresentation(Note note) {
     DateTime localDateTime = note.datetime.toLocal();
     DateTime now = DateTime.now();
 
     if (localDateTime.day == now.day &&
         localDateTime.month == now.month &&
         localDateTime.year == now.year) {
-      return _hourFormat.format(note.datetime);
+      return "Today ${_hourFormat.format(note.datetime)}";
     }
 
     DateTime yesterday = now.subtract(Duration(days: 1));
@@ -92,47 +93,45 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildSearchTextField(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+    return Card(
       margin: const EdgeInsets.only(left: 8.0, right: 8.0),
-      decoration: ShapeDecoration(
-          color: Colors.grey.shade300,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15.0),
-          )),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                changeSearch = true;
-              });
-            },
-            child: Icon(
+      elevation: 0.0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          children: [
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  changeSearch = true;
+                });
+              },
+              child: Icon(
                 Icons.search,
                 color: Colors.grey,
               ),
-          ),
-          SizedBox(
-            width: 8.0,
-          ),
-          Expanded(
-            child: TextField(
-              controller: _searchController,
-              cursorColor: Colors.black,
-              autofocus: false,
-              decoration: InputDecoration.collapsed(
-                  hintText: "Search notes",
-                  filled: true,
-                  fillColor: Colors.transparent),
-              onChanged: (value) {
-                setState(() {
-                  value.isEmpty ? changeSearch = false : changeSearch = true;
-                });
-              },
             ),
-          )
-        ],
+            SizedBox(
+              width: 8.0,
+            ),
+            Expanded(
+              child: TextField(
+                controller: _searchController,
+                autofocus: false,
+                decoration: InputDecoration.collapsed(
+                    hintText: "Search notes",
+                    filled: true,
+                    fillColor: Colors.transparent),
+                onChanged: (value) {
+                  setState(() {
+                    value.isEmpty ? changeSearch = false : changeSearch = true;
+                  });
+                },
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -141,7 +140,6 @@ class _HomePageState extends State<HomePage> {
     return AppBar(
       title: Text(
         'TODO NOTE',
-        style: TextStyle(color: Colors.black),
       ),
       actions: [
         /*IconButton(
@@ -170,11 +168,9 @@ class _HomePageState extends State<HomePage> {
           icon: changeFavorite
               ? Icon(
                   Icons.bookmark,
-                  color: Colors.lightBlue,
                 )
               : Icon(
                   Icons.bookmark_border,
-                  color: Colors.lightBlue,
                 ),
           onPressed: () {
             setState(() {
@@ -191,7 +187,6 @@ class _HomePageState extends State<HomePage> {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
           icon: Icon(
             Icons.more_vert,
-            color: Colors.lightBlue,
           ),
           itemBuilder: (context) => [
             PopupMenuItem(
@@ -266,13 +261,12 @@ class _HomePageState extends State<HomePage> {
   Widget _buildListItem(Note note, NotesDao notesDao) {
     bool updateFav = note.favourite;
     return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        decoration: ShapeDecoration(
-          color: Colors.grey.shade100,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-        ),
+      padding:
+          const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 4.0, top: 4.0),
+      child: Card(
+        elevation: 0.0,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
         child: ListTile(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
@@ -280,7 +274,7 @@ class _HomePageState extends State<HomePage> {
             note.body,
             overflow: TextOverflow.ellipsis,
           ),
-          subtitle: Text(getDateTimeRepresentation(note, notesDao)),
+          subtitle: Text(getDateTimeRepresentation(note)),
           trailing: GestureDetector(
             onTap: () {
               if (updateFav) {
@@ -293,7 +287,6 @@ class _HomePageState extends State<HomePage> {
             },
             child: Icon(
               updateFav ? Icons.bookmark : Icons.bookmark_border,
-              color: updateFav ? Colors.blue : null,
             ),
           ),
           onTap: () {
@@ -306,6 +299,8 @@ class _HomePageState extends State<HomePage> {
                 context: context,
                 builder: (context) {
                   return AlertDialog(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0)),
                     title: Text("Are u sure want to delete?"),
                     actions: [
                       FlatButton(
@@ -355,7 +350,6 @@ class _HomePageState extends State<HomePage> {
                 child: IconButton(
                   icon: Icon(
                     Icons.calendar_today,
-                    color: Colors.grey,
                   ),
                   onPressed: () async {
                     final selectedDate = await showDatePicker(

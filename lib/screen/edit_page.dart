@@ -5,7 +5,7 @@ import 'package:moor_flutter/moor_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:todos_moor/database/todos_database.dart';
 
-final _dateFormat = DateFormat.yMMMMd('en_US').add_jm();
+final _dateFormat = DateFormat.yMMMMd().add_jm();
 
 class EditPage extends StatefulWidget {
   final Note note;
@@ -66,9 +66,6 @@ class _EditPageState extends State<EditPage> {
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
-      iconTheme: IconThemeData(
-        color: Colors.lightBlue,
-      ),
       actions: [
         Visibility(
           visible: widget.note.id != null ? true : false,
@@ -90,7 +87,6 @@ class _EditPageState extends State<EditPage> {
           child: IconButton(
             icon: Icon(
               Icons.check,
-              color: Colors.lightBlue,
               size: 30,
             ),
             onPressed: () {
@@ -123,7 +119,7 @@ class _EditPageState extends State<EditPage> {
   Widget build(BuildContext context) {
     var notesDao = Provider.of<NotesDao>(context);
 
-    var createdDateTime = _dateFormat.format(DateTime.now());
+    String createdDateTime;
     if (_createdDateTime != null) {
       createdDateTime = _dateFormat.format(_createdDateTime);
     }

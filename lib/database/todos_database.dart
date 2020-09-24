@@ -1,4 +1,3 @@
-import 'package:intl/intl.dart';
 import 'package:moor_flutter/moor_flutter.dart';
 
 part 'todos_database.g.dart';
@@ -6,7 +5,7 @@ part 'todos_database.g.dart';
 class Notes extends Table {
   IntColumn get id => integer().autoIncrement()();
 
-  DateTimeColumn get datetime => dateTime().nullable()();
+  IntColumn get datetime => integer()();
 
   TextColumn get body => text()();
 
@@ -75,8 +74,8 @@ class NotesDao extends DatabaseAccessor<AppDatabase> with _$NotesDaoMixin {
       selectQuery.where((tbl) => tbl.body.like("$word%"));
     } else {
       selectQuery.where((tbl) {
-        return tbl.datetime.day.equals(dateTime.day) &
-            tbl.datetime.month.equals(dateTime.month) &
+        return tbl.datetime.month.equals(dateTime.month) &
+            tbl.datetime.day.equals(dateTime.day) &
             tbl.datetime.year.equals(dateTime.year);
       });
     }
@@ -92,13 +91,13 @@ class NotesDao extends DatabaseAccessor<AppDatabase> with _$NotesDaoMixin {
       selectWhereQuery
         ..orderBy(([
           (note) =>
-              OrderingTerm(expression: note.datetime, mode: OrderingMode.desc)
+              OrderingTerm(expression: note.datetime, mode: OrderingMode.asc)
         ]));
     } else {
       selectWhereQuery
         ..orderBy(([
           (note) =>
-              OrderingTerm(expression: note.datetime, mode: OrderingMode.asc)
+              OrderingTerm(expression: note.datetime, mode: OrderingMode.desc)
         ]));
     }
 
