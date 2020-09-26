@@ -9,25 +9,24 @@ part of 'todos_database.dart';
 // ignore_for_file: unnecessary_brace_in_string_interps, unnecessary_this
 class Note extends DataClass implements Insertable<Note> {
   final int id;
-  final DateTime datetime;
+  final int datetime;
   final String body;
   final bool favourite;
   Note(
       {@required this.id,
-      this.datetime,
+      @required this.datetime,
       @required this.body,
       @required this.favourite});
   factory Note.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final intType = db.typeSystem.forDartType<int>();
-    final dateTimeType = db.typeSystem.forDartType<DateTime>();
     final stringType = db.typeSystem.forDartType<String>();
     final boolType = db.typeSystem.forDartType<bool>();
     return Note(
       id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
-      datetime: dateTimeType
-          .mapFromDatabaseResponse(data['${effectivePrefix}datetime']),
+      datetime:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}datetime']),
       body: stringType.mapFromDatabaseResponse(data['${effectivePrefix}body']),
       favourite:
           boolType.mapFromDatabaseResponse(data['${effectivePrefix}favourite']),
@@ -40,7 +39,7 @@ class Note extends DataClass implements Insertable<Note> {
       map['id'] = Variable<int>(id);
     }
     if (!nullToAbsent || datetime != null) {
-      map['datetime'] = Variable<DateTime>(datetime);
+      map['datetime'] = Variable<int>(datetime);
     }
     if (!nullToAbsent || body != null) {
       map['body'] = Variable<String>(body);
@@ -69,7 +68,7 @@ class Note extends DataClass implements Insertable<Note> {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return Note(
       id: serializer.fromJson<int>(json['id']),
-      datetime: serializer.fromJson<DateTime>(json['datetime']),
+      datetime: serializer.fromJson<int>(json['datetime']),
       body: serializer.fromJson<String>(json['body']),
       favourite: serializer.fromJson<bool>(json['favourite']),
     );
@@ -79,14 +78,13 @@ class Note extends DataClass implements Insertable<Note> {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'datetime': serializer.toJson<DateTime>(datetime),
+      'datetime': serializer.toJson<int>(datetime),
       'body': serializer.toJson<String>(body),
       'favourite': serializer.toJson<bool>(favourite),
     };
   }
 
-  Note copyWith({int id, DateTime datetime, String body, bool favourite}) =>
-      Note(
+  Note copyWith({int id, int datetime, String body, bool favourite}) => Note(
         id: id ?? this.id,
         datetime: datetime ?? this.datetime,
         body: body ?? this.body,
@@ -118,7 +116,7 @@ class Note extends DataClass implements Insertable<Note> {
 
 class NotesCompanion extends UpdateCompanion<Note> {
   final Value<int> id;
-  final Value<DateTime> datetime;
+  final Value<int> datetime;
   final Value<String> body;
   final Value<bool> favourite;
   const NotesCompanion({
@@ -129,13 +127,14 @@ class NotesCompanion extends UpdateCompanion<Note> {
   });
   NotesCompanion.insert({
     this.id = const Value.absent(),
-    this.datetime = const Value.absent(),
+    @required int datetime,
     @required String body,
     this.favourite = const Value.absent(),
-  }) : body = Value(body);
+  })  : datetime = Value(datetime),
+        body = Value(body);
   static Insertable<Note> custom({
     Expression<int> id,
-    Expression<DateTime> datetime,
+    Expression<int> datetime,
     Expression<String> body,
     Expression<bool> favourite,
   }) {
@@ -149,7 +148,7 @@ class NotesCompanion extends UpdateCompanion<Note> {
 
   NotesCompanion copyWith(
       {Value<int> id,
-      Value<DateTime> datetime,
+      Value<int> datetime,
       Value<String> body,
       Value<bool> favourite}) {
     return NotesCompanion(
@@ -167,7 +166,7 @@ class NotesCompanion extends UpdateCompanion<Note> {
       map['id'] = Variable<int>(id.value);
     }
     if (datetime.present) {
-      map['datetime'] = Variable<DateTime>(datetime.value);
+      map['datetime'] = Variable<int>(datetime.value);
     }
     if (body.present) {
       map['body'] = Variable<String>(body.value);
@@ -204,14 +203,14 @@ class $NotesTable extends Notes with TableInfo<$NotesTable, Note> {
   }
 
   final VerificationMeta _datetimeMeta = const VerificationMeta('datetime');
-  GeneratedDateTimeColumn _datetime;
+  GeneratedIntColumn _datetime;
   @override
-  GeneratedDateTimeColumn get datetime => _datetime ??= _constructDatetime();
-  GeneratedDateTimeColumn _constructDatetime() {
-    return GeneratedDateTimeColumn(
+  GeneratedIntColumn get datetime => _datetime ??= _constructDatetime();
+  GeneratedIntColumn _constructDatetime() {
+    return GeneratedIntColumn(
       'datetime',
       $tableName,
-      true,
+      false,
     );
   }
 
@@ -255,6 +254,8 @@ class $NotesTable extends Notes with TableInfo<$NotesTable, Note> {
     if (data.containsKey('datetime')) {
       context.handle(_datetimeMeta,
           datetime.isAcceptableOrUnknown(data['datetime'], _datetimeMeta));
+    } else if (isInserting) {
+      context.missing(_datetimeMeta);
     }
     if (data.containsKey('body')) {
       context.handle(

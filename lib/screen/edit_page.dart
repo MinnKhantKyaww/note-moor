@@ -16,8 +16,8 @@ class EditPage extends StatefulWidget {
   _EditPageState createState() => _EditPageState();
 }
 
-Widget _buildTextField(
-    TextEditingController contentController, String createdDateTime, Note note) {
+Widget _buildTextField(TextEditingController contentController,
+    String createdDateTime, Note note) {
   return ListView(
     children: [
       Padding(
@@ -46,13 +46,14 @@ Widget _buildTextField(
 
 class _EditPageState extends State<EditPage> {
   TextEditingController _contentController;
-  DateTime _createdDateTime;
+  int _createdDateTime;
 
   @override
   void initState() {
     _contentController = TextEditingController(text: widget.note.body);
-    _createdDateTime =
-        widget.note.datetime == null ? DateTime.now() : widget.note.datetime;
+    _createdDateTime = widget.note.datetime == null
+        ? DateTime.now().toUtc().millisecondsSinceEpoch
+        : widget.note.datetime;
     super.initState();
   }
 
@@ -90,7 +91,7 @@ class _EditPageState extends State<EditPage> {
               size: 30,
             ),
             onPressed: () {
-              if(_contentController != null &&
+              if (_contentController != null &&
                   _contentController.text.isNotEmpty) {
                 if (widget.note.id == null) {
                   notesDao.insertNote(NotesCompanion(
@@ -98,14 +99,19 @@ class _EditPageState extends State<EditPage> {
                       body: Value(_contentController.text)));
                   Navigator.pop(context);
                 } else {
-                  if(_contentController.text.length > widget.note.body.length) {
-                    _createdDateTime = DateTime.now();
+                  if (_contentController.text.length >
+                          widget.note.body.length ||
+                      _contentController.text.length <
+                          widget.note.body.length) {
+                    _createdDateTime =
+                        DateTime.now().toUtc().millisecondsSinceEpoch;
+                    notesDao.updateNote(NotesCompanion(
+                        id: Value(widget.note.id),
+                        datetime: Value(_createdDateTime),
+                        body: Value(_contentController.text)));
                   }
-                  notesDao.updateNote(NotesCompanion(
-                      id: Value(widget.note.id),
-                      datetime: Value(_createdDateTime),
-                      body: Value(_contentController.text)));
                   Navigator.pop(context);
+                  print(DateTime.now().toUtc());
                 }
               }
             },
@@ -121,7 +127,8 @@ class _EditPageState extends State<EditPage> {
 
     String createdDateTime;
     if (_createdDateTime != null) {
-      createdDateTime = _dateFormat.format(_createdDateTime);
+      createdDateTime = _dateFormat
+          .format(DateTime.fromMillisecondsSinceEpoch(_createdDateTime));
     }
 
     return Scaffold(

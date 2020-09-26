@@ -73,10 +73,13 @@ class NotesDao extends DatabaseAccessor<AppDatabase> with _$NotesDaoMixin {
     if (selected) {
       selectQuery.where((tbl) => tbl.body.like("$word%"));
     } else {
+      print(dateTime.toUtc().add(Duration(hours: 00 ,minutes: 00, seconds: 00, milliseconds: 59)));
+      print(dateTime.toUtc().add(Duration(hours: 23, minutes: 59)));
       selectQuery.where((tbl) {
-        return tbl.datetime.month.equals(dateTime.month) &
-            tbl.datetime.day.equals(dateTime.day) &
-            tbl.datetime.year.equals(dateTime.year);
+        print(dateTime.toUtc().add(Duration(hours: 00 ,minutes: 00, seconds: 00)));
+        return tbl.datetime.isBetweenValues(
+            dateTime.toUtc().add(Duration(hours: 00 ,minutes: 00, seconds: 00, milliseconds: 59)).millisecondsSinceEpoch,
+            dateTime.toUtc().add(Duration(hours: 23, minutes: 59, seconds: 59, milliseconds: 59)).millisecondsSinceEpoch);
       });
     }
 

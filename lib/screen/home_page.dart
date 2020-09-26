@@ -73,23 +73,23 @@ class _HomePageState extends State<HomePage> {
   }
 
   String getDateTimeRepresentation(Note note) {
-    DateTime localDateTime = note.datetime.toLocal();
+    DateTime localDateTime = DateTime.fromMillisecondsSinceEpoch(note.datetime).toLocal();
     DateTime now = DateTime.now();
 
     if (localDateTime.day == now.day &&
         localDateTime.month == now.month &&
         localDateTime.year == now.year) {
-      return "Today ${_hourFormat.format(note.datetime)}";
+      return "Today ${_hourFormat.format(DateTime.fromMillisecondsSinceEpoch(note.datetime))}";
     }
 
     DateTime yesterday = now.subtract(Duration(days: 1));
     if (localDateTime.day == yesterday.day &&
         localDateTime.month == yesterday.month &&
         localDateTime.year == yesterday.year) {
-      return "Yesterday ${_hourFormat.format(note.datetime)}";
+      return "Yesterday ${_hourFormat.format(DateTime.fromMillisecondsSinceEpoch(note.datetime))}";
     }
 
-    return _dateFormat.format(note.datetime);
+    return _dateFormat.format(DateTime.fromMillisecondsSinceEpoch(note.datetime));
   }
 
   Widget _buildSearchTextField(BuildContext context) {
