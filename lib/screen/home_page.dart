@@ -277,7 +277,7 @@ class _HomePageState extends State<HomePage> {
           subtitle: Text(getDateTimeRepresentation(note)),
           trailing: GestureDetector(
             onTap: () {
-              if (updateFav) {
+              if (note.favourite) {
                 notesDao.updateNote(note.copyWith(favourite: false));
                 updateFav = false;
               } else {

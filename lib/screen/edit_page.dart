@@ -94,10 +94,11 @@ class _EditPageState extends State<EditPage> {
               if (_contentController != null &&
                   _contentController.text.isNotEmpty) {
                 if (widget.note.id == null) {
-                  notesDao.insertNote(NotesCompanion(
-                      datetime: Value(_createdDateTime),
-                      body: Value(_contentController.text)));
-                  Navigator.pop(context);
+                  notesDao
+                      .insertNote(NotesCompanion(
+                          datetime: Value(_createdDateTime),
+                          body: Value(_contentController.text)))
+                      .then((value) => Navigator.pop(context));
                 } else {
                   if (_contentController.text.length >
                           widget.note.body.length ||
@@ -108,10 +109,10 @@ class _EditPageState extends State<EditPage> {
                     notesDao.updateNote(NotesCompanion(
                         id: Value(widget.note.id),
                         datetime: Value(_createdDateTime),
-                        body: Value(_contentController.text)));
+                        body: Value(_contentController.text,),
+                    favourite: Value(widget.note.favourite)));
                   }
                   Navigator.pop(context);
-                  print(DateTime.now().toUtc());
                 }
               }
             },

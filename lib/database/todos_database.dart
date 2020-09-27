@@ -76,7 +76,6 @@ class NotesDao extends DatabaseAccessor<AppDatabase> with _$NotesDaoMixin {
       print(dateTime.toUtc().add(Duration(hours: 00 ,minutes: 00, seconds: 00, milliseconds: 59)));
       print(dateTime.toUtc().add(Duration(hours: 23, minutes: 59)));
       selectQuery.where((tbl) {
-        print(dateTime.toUtc().add(Duration(hours: 00 ,minutes: 00, seconds: 00)));
         return tbl.datetime.isBetweenValues(
             dateTime.toUtc().add(Duration(hours: 00 ,minutes: 00, seconds: 00, milliseconds: 59)).millisecondsSinceEpoch,
             dateTime.toUtc().add(Duration(hours: 23, minutes: 59, seconds: 59, milliseconds: 59)).millisecondsSinceEpoch);
