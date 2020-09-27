@@ -16,7 +16,7 @@ class Notes extends Table {
 class AppDatabase extends _$AppDatabase {
   AppDatabase()
       : super(FlutterQueryExecutor.inDatabaseFolder(
-            path: 'db.sql', logStatements: true));
+            path: 'db.sql', logStatements: false));
 
   @override
   int get schemaVersion => 1;

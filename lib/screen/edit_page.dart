@@ -104,15 +104,15 @@ class _EditPageState extends State<EditPage> {
                           widget.note.body.length ||
                       _contentController.text.length <
                           widget.note.body.length) {
-                    _createdDateTime =
-                        DateTime.now().toUtc().millisecondsSinceEpoch;
+                    /*_createdDateTime =
+                        DateTime.now().toUtc().millisecondsSinceEpoch;*/
                     notesDao.updateNote(NotesCompanion(
                         id: Value(widget.note.id),
                         datetime: Value(_createdDateTime),
                         body: Value(_contentController.text,),
-                    favourite: Value(widget.note.favourite)));
+                    favourite: Value(widget.note.favourite)))
+                    .then((value) => Navigator.pop(context));
                   }
-                  Navigator.pop(context);
                 }
               }
             },
