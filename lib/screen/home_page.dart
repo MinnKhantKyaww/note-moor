@@ -4,7 +4,6 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:todos_moor/database/todos_database.dart';
-import 'package:todos_moor/model/DarkTheme.dart';
 import 'package:todos_moor/screen/edit_page.dart';
 import 'package:todos_moor/screen/setting_page.dart';
 

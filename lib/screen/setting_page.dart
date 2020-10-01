@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todos_moor/model/DarkTheme.dart';
+import 'package:todos_moor/provider/DarkTheme.dart';
 
 class SettingPage extends StatefulWidget {
   @override

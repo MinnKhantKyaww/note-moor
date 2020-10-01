@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todos_moor/database/todos_database.dart';
-import 'package:todos_moor/model/DarkTheme.dart';
+import 'package:todos_moor/provider/DarkTheme.dart';
 import 'package:todos_moor/screen/home_page.dart';
 import 'package:todos_moor/utils/styles.dart';
 
