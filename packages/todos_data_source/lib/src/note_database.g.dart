@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'todos_database.dart';
+part of 'note_database.dart';
 
 // **************************************************************************
 // MoorGenerator
@@ -284,22 +284,14 @@ class $NotesTable extends Notes with TableInfo<$NotesTable, Note> {
   }
 }
 
-abstract class _$AppDatabase extends GeneratedDatabase {
-  _$AppDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
+abstract class _$NoteDatabase extends GeneratedDatabase {
+  _$NoteDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
   $NotesTable _notes;
   $NotesTable get notes => _notes ??= $NotesTable(this);
   NotesDao _notesDao;
-  NotesDao get notesDao => _notesDao ??= NotesDao(this as AppDatabase);
+  NotesDao get notesDao => _notesDao ??= NotesDao(this as NoteDatabase);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [notes];
-}
-
-// **************************************************************************
-// DaoGenerator
-// **************************************************************************
-
-mixin _$NotesDaoMixin on DatabaseAccessor<AppDatabase> {
-  $NotesTable get notes => attachedDatabase.notes;
 }

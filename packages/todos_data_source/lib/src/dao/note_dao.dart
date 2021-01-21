@@ -1,43 +1,32 @@
-import 'package:moor_flutter/moor_flutter.dart';
+import 'package:todos_data_source/src/entity/note_entity.dart';
+import 'package:moor/moor.dart';
+import 'package:todos_data_source/src/note_database.dart';
+import 'package:todos_domain/todos_domain.dart';
+import 'package:todos_data_source/src/extensions.dart';
 
-part 'todos_database.g.dart';
-
-class Notes extends Table {
-  IntColumn get id => integer().autoIncrement()();
-
-  IntColumn get datetime => integer()();
-
-  TextColumn get body => text()();
-
-  BoolColumn get favourite => boolean().withDefault(Constant(false))();
-}
-
-@UseMoor(tables: [Notes], daos: [NotesDao])
-class AppDatabase extends _$AppDatabase {
-  AppDatabase()
-      : super(FlutterQueryExecutor.inDatabaseFolder(
-            path: 'db.sql', logStatements: false));
-
-  @override
-  int get schemaVersion => 1;
-}
+part 'note_dao.g.dart';
 
 @UseDao(tables: [Notes])
-class NotesDao extends DatabaseAccessor<AppDatabase> with _$NotesDaoMixin {
-  final AppDatabase appDatabase;
+class NotesDao extends DatabaseAccessor<NoteDatabase> with _$NotesDaoMixin {
+  final NoteDatabase noteDatabase;
 
-  NotesDao(this.appDatabase) : super(appDatabase);
+  NotesDao(this.noteDatabase) : super(noteDatabase);
 
-  Future<List<Note>> getAllNotes() => select(notes).get();
+  Future<List<NoteDTO>> getAllNotes() {
+    final query = select(notes);
+    return query.map((n) => n.toData()).get();
+  }
 
-  Stream<List<Note>> watchAllNotes() => (select(notes)
-        ..orderBy(([
+  Stream<List<NoteDTO>> watchAllNotes() {
+    final query = select(notes);
+    query..orderBy(([
           (note) =>
-              OrderingTerm(expression: note.datetime, mode: OrderingMode.desc)
-        ])))
-      .watch();
+          OrderingTerm(expression: note.datetime, mode: OrderingMode.desc)
+    ]));
+    return query.map((n) => n.toData()).watch();
+  }
 
-  Stream<List<Note>> watchAllNotesDateTime(
+  Stream<List<NoteDTO>> watchAllNotesDateTime(
       {bool sort = true, bool favorite = false}) {
     var selectQuery = select(notes);
     /*if(favorite && sort == true) {
@@ -52,21 +41,21 @@ class NotesDao extends DatabaseAccessor<AppDatabase> with _$NotesDaoMixin {
     if (sort) {
       selectQuery
         ..orderBy(([
-          (note) =>
+              (note) =>
               OrderingTerm(expression: note.datetime, mode: OrderingMode.asc)
         ]));
     } else {
       selectQuery
         ..orderBy(([
-          (note) =>
+              (note) =>
               OrderingTerm(expression: note.datetime, mode: OrderingMode.desc)
         ]));
     }
 
-    return selectQuery.watch();
+    return selectQuery.map((n) => n.toData()).watch();
   }
 
-  Stream<List<Note>> watchAllNotesByWord(
+  Stream<List<NoteDTO>> watchAllNotesByWord(
       {String word, DateTime dateTime, bool selected}) {
     var selectQuery = select(notes);
 
@@ -80,33 +69,33 @@ class NotesDao extends DatabaseAccessor<AppDatabase> with _$NotesDaoMixin {
       });
     }
 
-    return selectQuery.watch();
+    return selectQuery.map((n) => n.toData()).watch();
   }
 
-  Stream<List<Note>> watchAllNotesByFavorite({bool sort = false}) {
+  Stream<List<NoteDTO>> watchAllNotesByFavorite({bool sort = false}) {
     var selectWhereQuery = select(notes)
       ..where((tbl) => tbl.favourite.equals(true));
 
     if (sort) {
       selectWhereQuery
         ..orderBy(([
-          (note) =>
+              (note) =>
               OrderingTerm(expression: note.datetime, mode: OrderingMode.asc)
         ]));
     } else {
       selectWhereQuery
         ..orderBy(([
-          (note) =>
+              (note) =>
               OrderingTerm(expression: note.datetime, mode: OrderingMode.desc)
         ]));
     }
 
-    return selectWhereQuery.watch();
+    return selectWhereQuery.map((n) => n.toData()).watch();
   }
 
-  Future insertNote(Insertable<Note> note) => into(notes).insert(note);
+  Future insertNote(NotesCompanion note) => into(notes).insert(note);
 
-  Future updateNote(Insertable<Note> note) => update(notes).replace(note);
+  Future updateNote(NotesCompanion note) => update(notes).replace(note);
 
-  Future deleteNote(Insertable<Note> note) => delete(notes).delete(note);
+  Future deleteNote(NotesCompanion note) => delete(notes).delete(note);
 }

@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todos_moor/database/todos_database.dart';
-import 'package:todos_moor/provider/DarkTheme.dart';
-import 'package:todos_moor/screen/home_page.dart';
+import 'package:todos_data_source/todos_data_source.dart';
+import 'package:todos_moor/screens/note_screen/model/dark_theme_model.dart';
+import 'package:todos_moor/screens/note_screen/home_page.dart';
+import 'package:todos_moor/service_locator.dart';
 import 'package:todos_moor/utils/styles.dart';
 
 void main() {
-  runApp(MaterialAppTheme());
+  runApp(Provider<ServiceLocator>(
+    create: (context) => DefaultServiceLocator(NoteDatabase()),
+      dispose: (context, s) => s.close(),
+      child: ChangeNotifierProvider(
+        create: (context) => Provider.of<ServiceLocator>(context, listen: false).darkThemeModel,
+          child: MaterialAppTheme())
+  ));
 }
 
 class MaterialAppTheme extends StatefulWidget {
@@ -16,37 +23,36 @@ class MaterialAppTheme extends StatefulWidget {
 
 class _MaterialAppThemeState extends State<MaterialAppTheme> {
 
-  DarkTheme darkThemeNotifier = DarkTheme();
-
   @override
   void initState() {
-    getCurrentAppTheme();
+    getCurrentAppTheme(context);
     super.initState();
   }
 
-  void getCurrentAppTheme() async {
-    darkThemeNotifier.darkTheme =
-    await darkThemeNotifier.todoSharePreference.getTheme();
+  getCurrentAppTheme(BuildContext context) async {
+    final serviceLocator = Provider.of<ServiceLocator>(context, listen: false);
+    await serviceLocator.darkThemeModel.todoSharePreference.getTheme();
   }
 
   @override
   Widget build(BuildContext context) {
+    final serviceLocator = Provider.of<ServiceLocator>(context, listen: false);
     return MultiProvider(
       providers: [
-        Provider(
-          create: (_) => AppDatabase().notesDao,
+        ChangeNotifierProvider(
+          create: (_) => serviceLocator.noteListModel,
         ),
-        ChangeNotifierProvider<DarkTheme>(
-          create: (_) => darkThemeNotifier,
+        ChangeNotifierProvider<DarkThemeModel>(
+          create: (_) => serviceLocator.darkThemeModel,
         )
 
       ],
-      child: Consumer<DarkTheme>(
-        builder: (context, dark, _) {
+      child: Consumer<DarkThemeModel>(
+        builder: (context, model, child) {
           return  MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'Flutter Demo',
-            theme: Styles().themeData(darkThemeNotifier.darkTheme, context),
+            theme: Styles().themeData(model.darkTheme, context),
             home: HomePage(),
           );
         },

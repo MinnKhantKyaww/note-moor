@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:moor_flutter/moor_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:todos_moor/database/todos_database.dart';
+import 'package:todos_domain/todos_domain.dart';
+import 'package:todos_moor/screens/note_screen/model/note_edit_model.dart';
 
 final _dateFormat = DateFormat.yMMMMd().add_jm();
 
 class EditPage extends StatefulWidget {
-  final Note note;
+  final NoteDTO note;
 
   const EditPage({this.note});
 
@@ -17,7 +17,7 @@ class EditPage extends StatefulWidget {
 }
 
 Widget _buildTextField(TextEditingController contentController,
-    String createdDateTime, Note note) {
+    String createdDateTime, NoteDTO dto) {
   return ListView(
     children: [
       Padding(
@@ -28,7 +28,7 @@ Widget _buildTextField(TextEditingController contentController,
         padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
         child: TextField(
           controller: contentController,
-          autofocus: note.id == null ? true : false,
+          autofocus: dto.id == null ? true : false,
           keyboardType: TextInputType.multiline,
           maxLines: null,
           textInputAction: TextInputAction.next,
@@ -51,9 +51,9 @@ class _EditPageState extends State<EditPage> {
   @override
   void initState() {
     _contentController = TextEditingController(text: widget.note.body);
-    _createdDateTime = widget.note.datetime == null
+    _createdDateTime = widget.note.dateTime == null
         ? DateTime.now().toUtc().millisecondsSinceEpoch
-        : widget.note.datetime;
+        : widget.note.dateTime;
     super.initState();
   }
 
@@ -63,7 +63,7 @@ class _EditPageState extends State<EditPage> {
     super.dispose();
   }
 
-  AppBar _buildAppbar(NotesDao notesDao) {
+  AppBar _buildAppbar(NoteEditModel model) {
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
@@ -77,7 +77,7 @@ class _EditPageState extends State<EditPage> {
               size: 30,
             ),
             onPressed: () {
-              notesDao
+              model
                   .deleteNote(widget.note)
                   .whenComplete(() => Navigator.of(context).pop(true));
             },
@@ -94,10 +94,10 @@ class _EditPageState extends State<EditPage> {
               if (_contentController != null &&
                   _contentController.text.isNotEmpty) {
                 if (widget.note.id == null) {
-                  notesDao
-                      .insertNote(NotesCompanion(
-                          datetime: Value(_createdDateTime),
-                          body: Value(_contentController.text)))
+                  model
+                      .insertNote(NoteDTO(
+                          dateTime: _createdDateTime,
+                          body: _contentController.text))
                       .then((value) => Navigator.pop(context));
                 } else {
                   if (_contentController.text.length >
@@ -106,11 +106,11 @@ class _EditPageState extends State<EditPage> {
                           widget.note.body.length) {
                     /*_createdDateTime =
                         DateTime.now().toUtc().millisecondsSinceEpoch;*/
-                    notesDao.updateNote(NotesCompanion(
-                        id: Value(widget.note.id),
-                        datetime: Value(_createdDateTime),
-                        body: Value(_contentController.text,),
-                    favourite: Value(widget.note.favourite)))
+                    model.insertNote(NoteDTO(
+                        id: widget.note.id,
+                        dateTime: _createdDateTime,
+                        body: _contentController.text,
+                    favourite: widget.note.favourite))
                     .then((value) => Navigator.pop(context));
                   }
                 }
@@ -124,7 +124,7 @@ class _EditPageState extends State<EditPage> {
 
   @override
   Widget build(BuildContext context) {
-    var notesDao = Provider.of<NotesDao>(context);
+    final model = Provider.of<NoteEditModel>(context, listen: false);
 
     String createdDateTime;
     if (_createdDateTime != null) {
@@ -133,7 +133,7 @@ class _EditPageState extends State<EditPage> {
     }
 
     return Scaffold(
-      appBar: _buildAppbar(notesDao),
+      appBar: _buildAppbar(model),
       body: _buildTextField(_contentController, createdDateTime, widget.note),
     );
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todos_moor/provider/DarkTheme.dart';
+import 'package:todos_moor/screens/note_screen/model/dark_theme_model.dart';
 
 class SettingPage extends StatefulWidget {
   @override
@@ -25,7 +25,7 @@ class _SettingPageState extends State<SettingPage> {
       String chooseItem2,
       bool searchNote,
       bool themeNote}) {
-    final _darkTheme = Provider.of<DarkTheme>(context);
+    final _darkTheme = Provider.of<DarkThemeModel>(context);
 
     selectedByWord = _darkTheme.darkTheme ? false : true;
     selectedByDate = _darkTheme.darkTheme ? true : false;
@@ -215,7 +215,7 @@ class _SettingPageState extends State<SettingPage> {
                   ),
                   Expanded(
                     flex: 0,
-                    child: Consumer<DarkTheme>(
+                    child: Consumer<DarkThemeModel>(
                       builder: (context, dark, _) {
                         return Text(
                           dark.darkTheme ? 'On' : 'Off',
