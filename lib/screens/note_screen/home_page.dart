@@ -110,7 +110,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   AppBar _buildAppBar() {
-    final model = Provider.of<ServiceLocator>(context, listen: false).noteListModel;
     return AppBar(
       title: Text(
         'TODO NOTE',

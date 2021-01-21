@@ -34,7 +34,7 @@ class Styles {
             color: Colors.grey.shade900,
             elevation: 0.0,
             textTheme: TextTheme(
-                title: TextStyle(color: Colors.white, fontSize: 18.0)),
+                headline6: TextStyle(color: Colors.white, fontSize: 18.0)),
           ),
       );
     } else {
@@ -69,7 +69,7 @@ class Styles {
             elevation: 0.0,
             color: Colors.white,
             textTheme: TextTheme(
-                title: TextStyle(color: Colors.black, fontSize: 18.0))),
+                headline6: TextStyle(color: Colors.black, fontSize: 18.0))),
       );
     }
 
