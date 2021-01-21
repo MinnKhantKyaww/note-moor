@@ -8,15 +8,7 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPageState extends State<SettingPage> {
-  bool selected = true;
-  bool selectedByWord = true;
-  bool selectedByDate = false;
 
-  bool darkThemeSelected = false;
-  @override
-  void initState() {
-    super.initState();
-  }
 
   void _selectFilterBottomSheet(
       {BuildContext context,
@@ -27,8 +19,8 @@ class _SettingPageState extends State<SettingPage> {
       bool themeNote}) {
     final _darkTheme = Provider.of<DarkThemeModel>(context);
 
-    selectedByWord = _darkTheme.darkTheme ? false : true;
-    selectedByDate = _darkTheme.darkTheme ? true : false;
+    _darkTheme.selectedByWord = _darkTheme.darkTheme ? false : true;
+    _darkTheme.selectedByDate = _darkTheme.darkTheme ? true : false;
 
     showModalBottomSheet(
       context: context,
@@ -50,62 +42,70 @@ class _SettingPageState extends State<SettingPage> {
                   ),
                 ),
               ),
-              ListTile(
-                leading: selectedByWord
-                    ? Text(
-                        '$chooseItem1',
-                        style: TextStyle(fontSize: 16.0, color: Colors.blue),
-                      )
-                    : Text(
-                        '$chooseItem1',
-                        style: TextStyle(fontSize: 16.0),
-                      ),
-                onTap: () {
-                  setState(() {
-                    if (searchNote) {
-                      selected = true;
-                      selectedByWord = true;
-                      selectedByDate = false;
-                    }
-                    if (themeNote) {
-                      _darkTheme.darkTheme = false;
-                      if (_darkTheme.darkTheme == false) {
-                        selectedByDate = false;
-                        selectedByWord = true;
-                      }
-                    }
+              Consumer<DarkThemeModel>(
+                builder: (context, model, child) {
+                  return ListTile(
+                    leading: model.selectedByWord
+                        ? Text(
+                      '$chooseItem1',
+                      style: TextStyle(fontSize: 16.0, color: Colors.blue),
+                    )
+                        : Text(
+                      '$chooseItem1',
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                    onTap: () {
+                      setState(() {
+                        if (searchNote) {
+                          model.selected = true;
+                          model.selectedByWord = true;
+                          model.selectedByDate = false;
+                        }
+                        if (themeNote) {
+                          model.darkTheme = false;
+                          if (model.darkTheme == false) {
+                            model.selectedByDate = false;
+                            model.selectedByWord = true;
+                          }
+                        }
 
-                    Navigator.of(context).pop(true);
-                  });
+                        Navigator.of(context).pop(true);
+                      });
+                    },
+                  );
                 },
               ),
-              ListTile(
-                leading: selectedByDate
-                    ? Text(
-                        '$chooseItem2',
-                        style: TextStyle(fontSize: 16.0, color: Colors.blue),
-                      )
-                    : Text(
-                        '$chooseItem2',
-                        style: TextStyle(fontSize: 16.0),
-                      ),
-                onTap: () {
-                  setState(() {
-                    if (searchNote) {
-                      selected = false;
-                      selectedByDate = true;
-                      selectedByWord = false;
-                    }
-                    if (themeNote) {
-                      _darkTheme.darkTheme = true;
-                      if (_darkTheme.darkTheme) {
-                        selectedByWord = false;
-                        selectedByDate = true;
-                      }
-                    }
+              Consumer<DarkThemeModel>(
+                builder: (context, model, child) {
+                  return ListTile(
+                    leading: model.selectedByDate
+                        ? Text(
+                      '$chooseItem2',
+                      style: TextStyle(fontSize: 16.0, color: Colors.blue),
+                    )
+                        : Text(
+                      '$chooseItem2',
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                    onTap: () {
+                      setState(() {
+                        if (searchNote) {
+                          model.selected = false;
+                          model.selectedByDate = true;
+                          model.selectedByWord = false;
+                        }
+                        if (themeNote) {
+                          model.darkTheme = true;
+                          if (_darkTheme.darkTheme) {
+                            model.selectedByWord = false;
+                            model.selectedByDate = true;
+                          }
+                        }
 
-                    Navigator.of(context).pop(true);
-                  });
+                        Navigator.of(context).pop(true);
+                      });
+                    },
+                  );
                 },
               ),
               Center(

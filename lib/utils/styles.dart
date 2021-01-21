@@ -25,7 +25,7 @@ class Styles {
         cardTheme: CardTheme(
           color: Colors.black12,
         ),
-        primaryIconTheme: IconThemeData(color: Colors.lightBlueAccent),
+        floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: Colors.lightBlueAccent),
         iconTheme: IconThemeData(color: Colors.lightBlueAccent),
         cursorColor: Colors.white,
         focusColor: Colors.white,
@@ -45,7 +45,6 @@ class Styles {
           accentColor: Colors.white,
           accentColorBrightness: Brightness.light,*/
         accentColor: Colors.grey,
-        accentColorBrightness: Brightness.light,
         colorScheme: ColorScheme.light(
           primary: Colors.blue,
           secondary: Colors.blue.shade500,
@@ -61,6 +60,7 @@ class Styles {
         cardTheme: CardTheme(
           color: Colors.grey.shade100,
         ),
+        floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: Colors.grey),
         iconTheme: IconThemeData(color: Colors.grey),
         primaryIconTheme: IconThemeData(color: Colors.grey),
         cursorColor: Colors.black,
