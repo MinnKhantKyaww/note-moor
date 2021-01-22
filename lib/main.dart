@@ -43,7 +43,7 @@ class _MaterialAppThemeState extends State<MaterialAppTheme> {
           create: (_) => serviceLocator.noteListModel,
         ),
         ChangeNotifierProvider<DarkThemeModel>(
-          create: (_) => serviceLocator.darkThemeModel,
+          create: (context) => serviceLocator.darkThemeModel,
         )
 
       ],

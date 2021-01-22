@@ -27,6 +27,7 @@ class Styles {
         ),
         floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: Colors.lightBlueAccent),
         iconTheme: IconThemeData(color: Colors.lightBlueAccent),
+        primaryIconTheme: IconThemeData(color: Colors.lightBlueAccent),
         cursorColor: Colors.white,
         focusColor: Colors.white,
         indicatorColor: Colors.lightBlueAccent,
